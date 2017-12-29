@@ -3,6 +3,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <time.h>
+#include "utmplib.c"
 
 #define SHOWHOST
 
@@ -11,19 +14,16 @@ void show_info(struct utmp *);
 
 int main()
 {
-	struct utmp current_record;		/* read info into here */
-	int utmpfd;
-	int reclen = sizeof(current_record);
+	struct utmp *utbufp,		/* read info into here */
+		*utmp_next();
 
-	if((utmpfd = open(UTMP_FILE, O_RDONLY)) == -1)
-	{
+	if(utmp_open(UTMP_FILE) == -1) {
 		perror(UTMP_FILE);
 		exit(1);
 	}
-
-	while(read(utmpfd, &current_record, reclen) == reclen)
-		show_info(&current_record);
-	close(utmpfd);
+	while((utbufp = utmp_next()) != ((struct utmp *)NULL))
+		show_info(utbufp);
+	utmp_close();
 	return 0;
 }
 
