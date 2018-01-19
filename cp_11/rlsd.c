@@ -6,6 +6,7 @@
 #include <netdb.h>
 #include <time.h>
 #include <strings.h>
+#include <stdlib.h>
 
 #define PORTNUM 15000
 #define HOSTLEN 256
@@ -32,8 +33,8 @@ int main(int argc, char *argv[])
     bzero((void *)&saddr, sizeof(saddr));
     gethostname(hostname, HOSTLEN);
     hp = gethostbyname(hostname);
-    bcopy((void *)hp->h_addr, (void *)&addr.sin_addr, hp->h_length);
-    saddr.sin_prot = htons(PORTNUM);
+    bcopy((void *)hp->h_addr, (void *)&saddr.sin_addr, hp->h_length);
+    saddr.sin_port = htons(PORTNUM);
     saddr.sin_family = AF_INET;
     if(bind(sock_id, (struct sockaddr *)&saddr, sizeof(saddr)) != 0)
         oops("bind");

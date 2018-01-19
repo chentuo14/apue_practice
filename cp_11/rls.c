@@ -3,9 +3,12 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <stdlib.h>
+#include <strings.h>
+#include <string.h>
 
 #define oops(msg)    { perror(msg); exit(1);}
-#define PORTNUM      1500
+#define PORTNUM      15000
 
 main(int argc, char *argv[])
 {
@@ -15,23 +18,23 @@ main(int argc, char *argv[])
     char buffer[BUFSIZ];
     int n_read;
 
-    if(argc != 3) eixt(1);
+    if(argc != 3) exit(1);
 
     /* step 1: Get a socket */
-    sock_id = socket(AF_INET, SOCK_TREAM, 0);
+    sock_id = socket(AF_INET, SOCK_STREAM, 0);
     if(sock_id == -1)
         oops("socket");
 
     /* step 2: connect to server */
     bzero(&servadd, sizeof(servadd));
-    hp = gethostbynamep(argv[1]);
+    hp = gethostbyname(argv[1]);
     if(hp == NULL)
         oops(argv[1]);
     bcopy(hp->h_addr, (struct sockaddr *)&servadd.sin_addr, hp->h_length);
     servadd.sin_port = htons(PORTNUM);
     servadd.sin_family = AF_INET;
 
-    if(connect(sock_id, (struct sockaddr *)&servadd, sizeof(servadd)) ! = 0)
+    if(connect(sock_id, (struct sockaddr *)&servadd, sizeof(servadd)) != 0)
         oops("connect");
     /* setp 3: send directory name, then read back results */
     if(write(sock_id, argv[2], strlen(argv[2])) == -1)
